@@ -1,0 +1,19 @@
+.con-pills {
+  background: linear-gradient(
+    111.4deg,
+    rgb(122, 192, 233) 18.8%,
+    rgb(4, 161, 255) 100.2%
+  );
+}
+
+.nav-pills li:hover {
+  background-color: green;
+  transition: 0.3s;
+  color: green;
+}
+
+.nav-pills li {
+  display: flex;
+  justify-content: flex-start;
+  border-radius: 10px;
+}

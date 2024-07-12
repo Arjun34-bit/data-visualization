@@ -1,0 +1,14 @@
+.head-pills {
+  background-color: aliceblue;
+  font-family: "Quicksand", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+
+.box {
+  margin: 10px 15px;
+  border: 1px solid aliceblue;
+  min-height: 350px;
+  background-color: white;
+  border-radius: 10px;
+}
