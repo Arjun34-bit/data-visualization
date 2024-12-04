@@ -4,6 +4,9 @@
     rgb(122, 192, 233) 18.8%,
     rgb(4, 161, 255) 100.2%
   );
+  position: fixed;
+  top: 0;
+  left: 0;
 }
 
 .nav-pills li:hover {
