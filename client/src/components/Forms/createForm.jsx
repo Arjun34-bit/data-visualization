@@ -4,11 +4,102 @@ import "quill/dist/quill.snow.css";
 import { useNavigate } from "react-router-dom";
 import { replaceWords } from "../../helpers/replace";
 
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+
 const CreateForm = () => {
   const [isFocus, setIsFocus] = useState(true);
   const [blanks, setBlanks] = useState();
   const [plain, setPlain] = useState("");
   const [plainText, setPlainText] = useState("");
+
+  //Category Data Structure
+  const [cat, setCat] = useState([
+    {
+      id: 1,
+      description: "",
+      categories: [{ id: 1, name: "" }],
+      categoryAns: [{ cat: "", ans: "" }],
+      points: 0,
+    },
+  ]);
+
+  //Cloze Data Structure
+
+  const [cloze, setCloze] = useState([
+    {
+      id: 1,
+      filledQuestion: "",
+      question: "",
+      answers: [],
+      points: 0,
+    },
+  ]);
+
+  // Comp Question Data Structure
+  const [comp, setComp] = useState([
+    {
+      id: 1,
+      paragraph: "",
+      mq: [
+        {
+          id: 1,
+          question: "",
+          options: { option1: "", option2: "", option3: "", option4: "" },
+          answer: "",
+          state: true,
+          points: 0,
+        },
+      ],
+      ponits: 0,
+    },
+  ]);
+
+  //CATEGORY OPERATION STARTS
+
+  const handleInputAnsChange = (catIndex, index, value) => {
+    const updatedCategories = [...cat];
+    updatedCategories[catIndex].categoryAns[index].ans = value;
+    setCat(updatedCategories);
+  };
+
+  // Handle changes in the category name input fields
+  const handleInputCatChange = (catIndex, value) => {
+    const updatedCat = [...cat];
+    updatedCat[catIndex].description = value;
+    setCat(updatedCat);
+  };
+
+  // Handle key press to add a new category or answer
+  const handleKeyPress = (catIndex, ansIndex, event, type) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      const updatedCat = [...cat];
+      if (type === "category") {
+        // Add new category
+        updatedCat[catIndex].categories.push({
+          id: updatedCat[catIndex].categories.length + 1,
+          name: "",
+        });
+      } else {
+        // Add new answer
+        updatedCat[catIndex].categoryAns.push({ cat: "", ans: "" });
+      }
+      setCat(updatedCat);
+    }
+  };
+
+  const onDragEnd = (result) => {
+    console.log("Source Index:", result.source.index);
+    console.log("Destination Index:", result.destination?.index);
+    if (!result.destination) return;
+
+    // const items = Array.from(categories);
+    // const [reorderedItem] = items.splice(result.source.index, 1);
+    // items.splice(result.destination.index, 0, reorderedItem);
+
+    // setCategories(items);
+  };
+  //CATEGORY OPERATION ENDS
 
   const { quill, quillRef } = useQuill({
     modules: {
@@ -39,43 +130,11 @@ const CreateForm = () => {
     }
   }, [quill]);
 
-  const [category, setCategory] = useState([{ id: 1 }]);
-  // const [cloze, setCloze] = useState([{ id: 1 }]);
-
-  // const [mcqs, setMcqs] = useState([{ id: 1 }]);
   const [ques, setIsQues] = useState([{ id: 1, state: false }]);
   const [isOption1, setIsOption1] = useState(true);
   const [isOption2, setIsOption2] = useState(true);
   const [isOption3, setIsOption3] = useState(true);
   const [isOption4, setIsOption4] = useState(true);
-
-  //Cloze Data Structure
-
-  const [cloze, setCloze] = useState([
-    {
-      id: 1,
-      filledQuestion: "",
-      question: "",
-      answers: [],
-    },
-  ]);
-
-  // Comp Question Data Structure
-  const [comp, setComp] = useState([
-    {
-      id: 1,
-      paragraph: "",
-      mq: [
-        {
-          id: 1,
-          question: "",
-          options: { option1: "", option2: "", option3: "", option4: "" },
-          answer: "",
-          state: true,
-        },
-      ],
-    },
-  ]);
 
   const handleInputParaChange = (compId, event) => {
     const textarea = event.target;
@@ -142,14 +201,30 @@ const CreateForm = () => {
     }
   };
 
+  //1----CATEGORY OPERATION STARTS
+
   const handleAdd = () => {
-    const newCat = category ? category[category.length - 1] + 1 : 1;
-    setCategory([...category, { id: newCat }]);
+    // Find the last category to determine the new ID
+    const newId = cat.length ? cat[cat.length - 1].id + 1 : 1;
+
+    // Add a new category with default values
+    setCat([
+      ...cat,
+      {
+        id: newId,
+        description: "",
+        categories: [{ id: 1, name: "" }],
+        categoryAns: [{ cat: "", ans: "" }],
+        points: 0,
+      },
+    ]);
   };
 
   const handleDelete = (id) => {
-    setCategory(category.filter((cat) => cat?.id !== id));
+    setCat(cat.filter((c) => c.id !== id));
   };
+
+  //1----CATEGORY OPERATIONS ENDS
 
   //2----CLOZE OPERATION STARTS
 
@@ -322,26 +397,138 @@ const CreateForm = () => {
       <div>
         {/*   Question Main Box */}
 
-        {category.map((cat) => (
+        {cat.map((cats, catIndex) => (
           <div
-            key={cat?.id}
+            key={cats.id}
             className="w-full h-64 mt-[10rem] flex items-center justify-between gap-1"
           >
-            {/* Category Question*/}
+            {/* Category Question */}
             <div className="w-full h-[24rem] border-2 border-blue-400 flex items-start flex-col">
               <div className="ml-[1rem]">
                 <p className="flex flex-start">Question 1</p>
                 <input
                   type="text"
                   placeholder="Description (optional)"
-                  className="w-[24rem] h-8 border-1 border-black"
+                  value={cats.description}
+                  className="w-[42rem] h-8 border-1 border-black p-1"
+                  onChange={(e) =>
+                    handleInputCatChange(catIndex, e.target.value)
+                  }
                 />
               </div>
 
               <div className="ml-[1rem] mt-1">
-                <span>Categories</span>
-                <div>{/* Drag & Drop */}</div>
+                <span className="flex flex-start">Categories</span>
+                <div className="mt-2">
+                  <DragDropContext onDragEnd={onDragEnd}>
+                    <Droppable droppableId="categories">
+                      {(provided) => (
+                        <div
+                          {...provided.droppableProps}
+                          ref={provided.innerRef}
+                        >
+                          {cats.categories.map((category, categoryIndex) => (
+                            <Draggable
+                              key={category.id}
+                              draggableId={String(category.id)}
+                              index={categoryIndex}
+                            >
+                              {(provided) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  className="flex items-center mt-2"
+                                >
+                                  <button
+                                    {...provided.dragHandleProps}
+                                    className="w-8 h-8 bg-gray-300 rounded-md flex items-center justify-center mr-2 cursor-grab"
+                                  >
+                                    ☰
+                                  </button>
+
+                                  <input
+                                    type="text"
+                                    value={category.name}
+                                    placeholder={`Category ${
+                                      categoryIndex + 1
+                                    }`}
+                                    className="w-32 h-8 border border-black rounded-lg p-1"
+                                    onChange={(e) => {
+                                      const updatedCategories = [...cat];
+                                      updatedCategories[catIndex].categories[
+                                        categoryIndex
+                                      ].name = e.target.value;
+                                      setCat(updatedCategories);
+                                    }}
+                                    onKeyDown={(e) =>
+                                      handleKeyPress(
+                                        catIndex,
+                                        categoryIndex,
+                                        e,
+                                        "category"
+                                      )
+                                    }
+                                  />
+                                </div>
+                              )}
+                            </Draggable>
+                          ))}
+                          {provided.placeholder}
+                        </div>
+                      )}
+                    </Droppable>
+                  </DragDropContext>
+                </div>
               </div>
+
+              <div className="mt-5 flex items-center gap-[24rem] ml-4">
+                <span className="flex flex-start">Items</span>
+                <span>Belongs To</span>
+              </div>
+
+              {/* Answer Fields for Categories */}
+              {cats.categoryAns.map((answer, ansIndex) => (
+                <div
+                  key={ansIndex}
+                  className="flex items-center gap-[16rem] ml-4 mt-1"
+                >
+                  <div className="input-box block gap-2">
+                    <input
+                      type="text"
+                      value={answer.ans}
+                      placeholder="Enter Answer"
+                      className="w-32 h-8 border border-black rounded-lg p-1"
+                      onChange={(e) =>
+                        handleInputAnsChange(catIndex, ansIndex, e.target.value)
+                      }
+                      onKeyDown={(e) =>
+                        handleKeyPress(catIndex, ansIndex, e, "answer")
+                      }
+                    />
+                  </div>
+
+                  {/* Dropdown Box */}
+                  <select
+                    value={answer.selectedOption || ""}
+                    className="w-32 h-8 border border-black rounded-lg p-1"
+                    onChange={(e) => {
+                      const updatedCat = [...cat];
+                      updatedCat[catIndex].categoryAns[
+                        ansIndex
+                      ].selectedOption = e.target.value;
+                      setCat(updatedCat);
+                    }}
+                  >
+                    {cats.categories.map((c) => (
+                      <>
+                        <option value="" disabled>
+                          {c.name}
+                        </option>
+                      </>
+                    ))}
+                  </select>
+                </div>
+              ))}
             </div>
             <div className="w-24 h-[24rem] flex flex-col items-center justify-center gap-2">
               <button
@@ -352,7 +539,7 @@ const CreateForm = () => {
               </button>
               <button
                 className="bg-red-400 p-1 w-12 border rounded-lg"
-                onClick={() => handleDelete(cat?.id)}
+                onClick={() => handleDelete(cats.id)}
               >
                 DEL
               </button>
@@ -363,7 +550,7 @@ const CreateForm = () => {
         {cloze.map((col) => (
           <div
             key={col?.id}
-            className="w-full h-64 mt-[10rem] flex items-center justify-between gap-1"
+            className="w-full mt-[10rem] flex items-center justify-between gap-1"
           >
             {/* Cloze Question*/}
             <div className="w-full h-[24rem] border-2 border-blue-400 flex items-start flex-col">
