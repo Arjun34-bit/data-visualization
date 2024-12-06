@@ -1,1 +1,1 @@
-export const url = "https://quizathon-backend.onrender.com";
+export const url = "https://quizathon-back-end.vercel.app";

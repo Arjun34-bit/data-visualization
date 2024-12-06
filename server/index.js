@@ -13,12 +13,12 @@ app.use(cors({ origin: "https://quizathon-front-end.onrender.com" }));
 const __dirname1 = path.resolve();
 
 // Serve static assets
-app.use(express.static(path.join(__dirname1, "/client/build")));
+// app.use(express.static(path.join(__dirname1, "/client/build")));
 
-// Fallback for all other routes (for React Router)
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname1, "client", "build", "index.html"));
-});
+// // Fallback for all other routes (for React Router)
+// app.get("*", (req, res) => {
+//   res.sendFile(path.join(__dirname1, "client", "build", "index.html"));
+// });
 
 connectDB();
 app.use(express.json());
