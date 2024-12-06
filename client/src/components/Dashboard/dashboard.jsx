@@ -14,7 +14,7 @@ const Dashboard = () => {
 
   const getAllForms = async () => {
     try {
-      const { data } = await axios.get(`${url}/api/quiz/getAllForms,`, {
+      const { data } = await axios.get(`${url}/api/quiz/getAllForms`, {
         headers: {
           "Content-Type": "application/json",
         },
