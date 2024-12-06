@@ -76,7 +76,7 @@ const createForm = async (req, res) => {
     const randomNumber = generateFourDigitNumber();
     const tag = `${title}-${randomNumber}`;
     const lnk = process.env.URL;
-    let url = `${lnk}/form/${tag}`;
+    let url = `${lnk}form/${tag}`;
 
     const question = new Question({
       title,

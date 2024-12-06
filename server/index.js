@@ -7,7 +7,7 @@ const connectDB = require("./dbConfig/connectDB");
 
 const app = express();
 dotenv.config();
-app.use(cors());
+app.use(cors({ origin: "https://quizathon-front-end.onrender.com" }));
 connectDB();
 app.use(express.json());
 
