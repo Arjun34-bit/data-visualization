@@ -1,4 +1,5 @@
-const DataModel = require("../models/dataModel");
+const { generateFourDigitNumber } = require("../helpers/helper.js");
+const Question = require("../models/form.js");
 
 const getAllRecords = async (req, res, next) => {
   try {
@@ -64,4 +65,65 @@ const getAllAverageRecords = async (req, res, next) => {
   }
 };
 
-module.exports = { getAllRecords, getAllAverageRecords };
+const createForm = async (req, res) => {
+  try {
+    const { title, cat, cloze, comp } = req.body;
+
+    // if (!cat.description || cat.categories === "" || !cat.categoryAns.cat) {
+    //   return;
+    // }
+
+    const randomNumber = generateFourDigitNumber();
+    const tag = `${title}-${randomNumber}`;
+    const lnk = process.env.URL;
+    let url = `${lnk}/form/${tag}`;
+
+    const question = new Question({
+      title,
+      cats: cat,
+      clozes: cloze,
+      comps: comp,
+      link: url,
+      tag: tag,
+    });
+
+    const savedQuestion = await question.save();
+    res.status(201).json(savedQuestion);
+  } catch (error) {
+    console.error("Error saving question:", error);
+    res.status(500).json({ message: "Failed to save question", error });
+  }
+};
+
+const getAllForms = async (req, res) => {
+  try {
+    const forms = await Question.find();
+    return res.status(201).json(forms);
+  } catch (error) {
+    console.error("Error fetching forms:", error);
+    res.status(500).json({ message: "Error fetching forms", error });
+  }
+};
+
+const getQuiz = async (req, res) => {
+  try {
+    const tag = req.params.val;
+
+    if (!tag) {
+      return;
+    }
+    const form = await Question.findOne({ tag: tag });
+    return res.status(201).json(form);
+  } catch (error) {
+    console.error("Error fetching form:", error);
+    res.status(500).json({ message: "Error fetching form", error });
+  }
+};
+
+module.exports = {
+  getAllRecords,
+  getAllAverageRecords,
+  createForm,
+  getAllForms,
+  getQuiz,
+};

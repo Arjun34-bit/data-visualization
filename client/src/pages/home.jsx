@@ -7,7 +7,6 @@ const Home = () => {
   const [searchParams] = useSearchParams();
 
   const view = searchParams.get("view");
-  console.log(view);
   return (
     <div class="flex h-screen">
       {/* <!-- Left Sidebar --> */}

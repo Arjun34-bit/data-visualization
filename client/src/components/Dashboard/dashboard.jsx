@@ -1,14 +1,29 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "./dashboard.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { url } from "../../constants/constants";
 
 const Dashboard = () => {
+  const [allForms, setAllForms] = useState([]);
   const navigate = useNavigate();
 
   const addValueToURL = () => {
     navigate("?view=create"); // Appends '?view=create' to the current URL
   };
+
+  const getAllForms = async () => {
+    try {
+      const { data } = await axios.get(`${url}/api/quiz/getAllForms`);
+      setAllForms(data);
+    } catch (error) {
+      alert("failure in fetching all forms");
+    }
+  };
+
+  useEffect(() => {
+    getAllForms();
+  }, []);
 
   return (
     // <>
@@ -285,19 +300,22 @@ const Dashboard = () => {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td className="border border-white p-2">1</td>
-              <td className="border border-white p-2">DSA (Python)</td>
-              <td className="border border-white p-2">2024-12-04</td>
-              <td className="border border-white p-2">
-                <a
-                  href="http://dsa-python-quiz.com"
-                  className="text-blue-600 underline"
-                >
-                  http://dsa-python-quiz.com
-                </a>
-              </td>
-            </tr>
+            {allForms?.map((form, index) => (
+              <tr>
+                <td className="border border-white p-2">{index + 1}</td>
+                <td className="border border-white p-2">{form?.title}</td>
+                <td className="border border-white p-2">2024-12-04</td>
+                <td className="border border-white p-2">
+                  <a
+                    href={form?.link}
+                    target="_blank"
+                    className="text-blue-600 underline"
+                  >
+                    {form?.link}
+                  </a>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

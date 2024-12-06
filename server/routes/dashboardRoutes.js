@@ -1,12 +1,14 @@
 const express = require("express");
 const {
-  getAllRecords,
-  getAllAverageRecords,
+  createForm,
+  getAllForms,
+  getQuiz,
 } = require("../controllers/dashboardController");
 
 const router = express.Router();
 
-router.get("/getAllRecords", getAllRecords);
-router.get("/getAllAverageRecords", getAllAverageRecords);
+router.post("/createForm", createForm);
+router.get("/getAllForms", getAllForms);
+router.get("/getQuiz/:val", getQuiz);
 
 module.exports = router;

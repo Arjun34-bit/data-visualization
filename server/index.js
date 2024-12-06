@@ -11,7 +11,7 @@ app.use(cors());
 connectDB();
 app.use(express.json());
 
-app.use("/api/dashboard/", dashboardRoutes);
+app.use("/api/quiz/", dashboardRoutes);
 
 const PORT = process.env.PORT || 5000;
 

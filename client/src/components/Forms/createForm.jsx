@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
+import axios from "axios";
 import { useQuill } from "react-quilljs";
 import "quill/dist/quill.snow.css";
 import { useNavigate } from "react-router-dom";
 import { replaceWords } from "../../helpers/replace";
 
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { url } from "../../constants/constants";
 
 const CreateForm = () => {
   const [isFocus, setIsFocus] = useState(true);
@@ -356,6 +358,28 @@ const CreateForm = () => {
 
   //MCQ OPERATIONS ENDS
 
+  const [title, setTitle] = useState("");
+  //API CALLS
+
+  const handleCreate = async () => {
+    try {
+      if (!title) {
+        alert("Please enter the form title");
+      }
+
+      const { data } = await axios.post(`${url}/api/quiz/createForm`, {
+        title: title,
+        cat: cat,
+        cloze: cloze,
+        comp: comp,
+      });
+
+      alert("Form Successfully created");
+    } catch (e) {
+      alert("Failure in creating form");
+    }
+  };
+
   return (
     <>
       <div className="p-4 shadow-lg text-lg flex items-center">
@@ -369,34 +393,27 @@ const CreateForm = () => {
 
       <div className="p-4 shadow-lg text-lg flex items-center justify-between">
         <div onClick={handleFocus}>
-          {isFocus ? (
-            <div className="relative group">
-              <span className="">Untitled Quiz</span>
-              <div class="absolute left-1/2 -translate-x-1/2 mt-2 w-max p-2 bg-gray-700 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                Tooltip text
-              </div>
-            </div>
-          ) : (
-            <input
-              type="text"
-              placeholder="Untitled Quiz"
-              className="w-64 border-1 border-black round round-sm"
-            />
-          )}
+          <input
+            type={title}
+            placeholder="Untitled Quiz"
+            className="w-64 border-1 border-black round round-sm"
+            onChange={(e) => setTitle(e.target.value)}
+          />
         </div>
         <div className="flex gap-2">
           <button className="px-1 py-0.5 border-1 border-blue-600 text-black">
             Save Draft
           </button>
-          <button className="px-1 py-0.5 bg-blue-400 text-white text-black">
+          <button
+            className="px-1 py-0.5 bg-blue-400 text-white text-black"
+            onClick={handleCreate}
+          >
             Save
           </button>
         </div>
       </div>
 
       <div>
-        {/*   Question Main Box */}
-
         {cat.map((cats, catIndex) => (
           <div
             key={cats.id}
