@@ -8,7 +8,7 @@ const connectDB = require("./dbConfig/connectDB");
 
 const app = express();
 dotenv.config();
-app.use(cors({ origin: "https://quizathon-front-end.onrender.com" }));
+app.use(cors({ origin: "https://quizathon-front-end.vercel.app/" }));
 
 const __dirname1 = path.resolve();
 
